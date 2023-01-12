@@ -131,7 +131,25 @@ void DB_LoadGraphicsAssetsForPC()
 		zoneCount++;	
 	}
 	
+	const char* localization = Win_GetLanguage();
 
+	int languageIndex = 0;
+	SEH_GetLanguageIndexForName(localization, &languageIndex);
+	auto languageAbbr = SEH_GetLanguageNameAbbr(languageIndex);
+
+	for (int modIndex = 0; modIndex < ARRAYSIZE(g_modZones); modIndex++)
+	{
+		// Check if the corresponding mod file exists
+		// if it doesn't - we should stop looking for additional ones
+		if (!DB_LocalizedModExists(modIndex))
+			break;
+
+		const char* localizedModFilename = va("%s_%s", languageAbbr, g_modZones[modIndex]);
+		zoneInfo[zoneCount].name = localizedModFilename;
+		zoneInfo[zoneCount].allocFlags = DB_ZONE_MOD_LOC;
+		zoneInfo[zoneCount].freeFlags = DB_FLAG_NULL;
+		zoneCount++;
+	}
 	DB_LoadXAssets(zoneInfo, zoneCount, 0);
 }
 
@@ -332,6 +350,33 @@ bool DB_ModFileExists(int index)
 
 	char filename[256];
 	if (sprintf_s(filename, 256, "%s\\%s\\%s.ff", fs_homepath->current.string, fs_gameDirVar->current.string, g_modZones[index]) == -1)
+		return false;
+
+	HANDLE h = CreateFileA(filename, 0x80000000, 1u, 0, 3u, 0x60000000u, 0);
+	if (h == INVALID_HANDLE_VALUE)
+		return false;
+
+
+	CloseHandle(h);
+	return true;
+}
+
+bool DB_LocalizedModExists(int index)
+{
+	ASSERT(index >= 0 && index < ARRAYSIZE(g_modZones));
+	if (fs_gameDirVar == NULL || fs_homepath == NULL)
+		return false;
+
+	char filename[256];
+
+	const char* localization = Win_GetLanguage();
+
+	int languageIndex = 0;
+	SEH_GetLanguageIndexForName(localization, &languageIndex);
+	auto languageAbbr = SEH_GetLanguageNameAbbr(languageIndex);
+
+	const char* localizedModFilename = va("%s_%s", languageAbbr, g_modZones[index]);
+	if (sprintf_s(filename, 256, "%s\\%s\\%s.ff", fs_homepath->current.string, fs_gameDirVar->current.string, localizedModFilename) == -1)
 		return false;
 
 	HANDLE h = CreateFileA(filename, 0x80000000, 1u, 0, 3u, 0x60000000u, 0);

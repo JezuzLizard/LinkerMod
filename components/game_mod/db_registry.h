@@ -219,6 +219,15 @@ static DB_EnumXAssets_t DB_EnumXAssets = (DB_EnumXAssets_t)0x0054C1C0;
 typedef void (__cdecl* DB_ListAssetPool_t)(XAssetType type);
 static DB_ListAssetPool_t DB_ListAssetPool = (DB_ListAssetPool_t)0x007A2C00;
 
+typedef const char*(__cdecl* SEH_GetLanguageNameAbbr_t)(int language);
+static SEH_GetLanguageNameAbbr_t SEH_GetLanguageNameAbbr = (SEH_GetLanguageNameAbbr_t)0x669B90;
+
+typedef const char* (__cdecl* Win_GetLanguage_t)();
+static Win_GetLanguage_t Win_GetLanguage = (Win_GetLanguage_t)0x523C70;
+
+typedef void(__cdecl* SEH_GetLanguageIndexForName_t)(const char* pszLanguageName, int* piLanguageIndex);
+static SEH_GetLanguageIndexForName_t SEH_GetLanguageIndexForName = (SEH_GetLanguageIndexForName_t)0x5A4CB0;
+
 XAssetEntry *DB_LinkXAssetEntry(XAssetEntry *newEntry, int allowOverride);
 const char *DB_GetXAssetName(XAsset *asset);
 const char *DB_GetXAssetHeaderName(XAssetType type, XAssetHeader *header);
@@ -240,3 +249,4 @@ XModel *DB_GetXModelAtIndex(unsigned int index);
 int DB_FinishedLoadingAssets();
 GfxImage *DB_AllocTempImage();
 bool DB_ModFileExists(int index = 0);
+bool DB_LocalizedModExists(int index = 0);

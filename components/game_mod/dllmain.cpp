@@ -79,7 +79,7 @@ BOOL GameMod_Init(HMODULE hModule)
 	PatchMemory(0x008B4240, (PBYTE)"\xC3", 1);// KickClientFromSteamGameServer
 	PatchMemory(0x00616628, (PBYTE)"\xEB", 1);// Runframe
 
-#if GM_USE_PROXY
+#if 0
 	//
 	// Fix the CWD
 	//
